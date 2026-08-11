@@ -48,7 +48,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
   opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:60}
 .toast.show{opacity:1;transform:translateX(-50%)}
 /* ============ 因果流三环 ============ */
-.flowrow{display:flex;align-items:center;margin-top:8px}
+.flowrow{display:flex;align-items:center;margin-top:28px}
 .r3{width:96px;flex:none;text-align:center;cursor:pointer}
 .r3 svg{width:100%;height:auto}
 .r3 .lab{font-size:9px;font-weight:800;letter-spacing:.1em;margin-top:3px;color:var(--ink38)}
@@ -193,6 +193,65 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 .inputbar .send{width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,#0DA678,#1B8FD6);
   border:none;color:#FFFFFF;font-weight:900;cursor:pointer}
 /* 底部导航 */
+/* ============ 深色主题(用户切换) ============ */
+.screen.dark{--bg:#0B0E14;--card:rgba(255,255,255,.06);--card2:rgba(255,255,255,.1);--line:rgba(255,255,255,.09);
+  --ink92:rgba(255,255,255,.93);--ink55:rgba(255,255,255,.6);--ink38:rgba(255,255,255,.42);--ink25:rgba(255,255,255,.3);
+  --mint:#40E0BA;--blue:#64D2FF;--purple:#9EA1D4;--coral:#FF6B81;--gold:#F59E0B;--gray:#9CA3AF}
+.dark .card,.dark .tile{box-shadow:none}
+.dark .insight-in{background:rgba(15,20,32,.94)}
+.dark .toast{background:rgba(30,38,48,.96)}
+.dark .nav{background:rgba(11,14,20,.9)}
+.dark .inputbar input{background:linear-gradient(rgba(20,26,36,.96),rgba(20,26,36,.96)) padding-box,linear-gradient(120deg,rgba(64,224,186,.6),rgba(100,210,255,.6)) border-box}
+.dark .bub.me{background:#22403c}
+.dark .avatar{background:linear-gradient(140deg,#2b4a44,#1a2c35)}
+.dark .aidot,.dark .send{background:linear-gradient(140deg,#40E0BA,#64D2FF)}
+.dark .nfab{background:linear-gradient(140deg,#40E0BA,#2bb595)}
+.dark .dchip{background:rgba(255,255,255,.07)}
+.dark .progress{background:rgba(255,255,255,.08)}
+.dark .jax::before{background:rgba(255,255,255,.18)}
+.dark .addbtn{border-color:rgba(255,255,255,.18)}
+.dark [stroke="#0DA678"]{stroke:#40E0BA} .dark [fill="#0DA678"]{fill:#40E0BA}
+.dark [stroke="#1B8FD6"]{stroke:#64D2FF} .dark [fill="#1B8FD6"]{fill:#64D2FF}
+.dark [stroke="#6E74C9"]{stroke:#9EA1D4} .dark [fill="#6E74C9"]{fill:#9EA1D4}
+.dark [stroke="#E24D66"]{stroke:#FF6B81} .dark [fill="#E24D66"]{fill:#FF6B81}
+.dark [stroke="#D97706"]{stroke:#F59E0B} .dark [fill="#D97706"]{fill:#F59E0B}
+.dark [stroke="rgba(15,23,32,.08)"]{stroke:rgba(255,255,255,.08)}
+.dark [stroke="rgba(15,23,32,.1)"]{stroke:rgba(255,255,255,.1)}
+.dark [stroke="rgba(15,23,32,.22)"]{stroke:rgba(255,255,255,.25)}
+.dark [stroke="rgba(15,23,32,.5)"]{stroke:rgba(255,255,255,.3)}
+.dark [fill="rgba(15,23,32,.66)"]{fill:rgba(255,255,255,.45)}
+.dark [fill="rgba(15,23,32,.7)"]{fill:rgba(255,255,255,.5)}
+.dark [fill="rgba(15,23,32,.75)"]{fill:rgba(255,255,255,.55)}
+.dark [fill="rgba(15,23,32,.5)"]{fill:rgba(255,255,255,.35)}
+.dark [stroke="rgba(27,143,214,.5)"]{stroke:rgba(100,210,255,.5)}
+.dark [fill="rgba(27,143,214,.5)"]{fill:rgba(100,210,255,.5)}
+.dark [fill="rgba(27,143,214,.75)"]{fill:rgba(100,210,255,.75)}
+.dark [fill="rgba(27,143,214,.4)"]{fill:rgba(100,210,255,.4)}
+.dark [stroke="rgba(27,143,214,.12)"]{stroke:rgba(100,210,255,.15)}
+.dark [stroke="rgba(110,116,201,.55)"]{stroke:rgba(158,161,212,.55)}
+.dark [fill="rgba(110,116,201,.55)"]{fill:rgba(158,161,212,.55)}
+.dark [stroke="rgba(110,116,201,.15)"]{stroke:rgba(158,161,212,.18)}
+.dark [stroke="rgba(226,77,102,.15)"]{stroke:rgba(255,107,129,.18)}
+.dark [stroke="rgba(13,166,120,.35)"]{stroke:rgba(64,224,186,.35)}
+.dark [stroke="rgba(13,166,120,.12)"]{stroke:rgba(64,224,186,.12)}
+.dark [style*="background:#0DA678"]{background:#40E0BA!important}
+.dark [style*="color:#0DA678"]{color:#40E0BA!important}
+.dark [style*="background:#1B8FD6"]{background:#64D2FF!important}
+.dark [style*="color:#1B8FD6"]{color:#64D2FF!important}
+.dark [style*="background:#6E74C9"]{background:#9EA1D4!important}
+.dark [style*="color:#6E74C9"]{color:#9EA1D4!important}
+.dark [style*="background:#E24D66"]{background:#FF6B81!important}
+.dark [style*="color:#E24D66"]{color:#FF6B81!important}
+.dark [style*="color:#D97706"]{color:#F59E0B!important}
+.dark [style*="background:#4C55A8"]{background:#565e86!important}
+.dark [style*="background:#8F97DD"]{background:#c0c3ea!important}
+.dark [style*="background:#E3E6F4"]{background:#3a4152!important}
+.dark [style*="background:rgba(226,77,102,.6)"]{background:rgba(255,107,129,.6)!important}
+.dark [style*="background:rgba(217,119,6,.6)"]{background:rgba(245,158,11,.6)!important}
+.dark [style*="border-color:rgba(110,116,201,.4)"]{border-color:rgba(158,161,212,.4)!important}
+.dark [style*="outline:2px solid rgba(15,23,32,.45)"]{outline-color:rgba(255,255,255,.35)!important}
+.dark [style*="linear-gradient(90deg,#E24D66"]{background:linear-gradient(90deg,#FF6B81,#F59E0B,#40E0BA)!important}
+/* ============ 底部导航 ============ */
 .nav{position:absolute;left:0;right:0;bottom:0;height:80px;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);
   border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:0 6px 14px;z-index:50}
 .nit{width:60px;text-align:center;font-size:9.5px;font-weight:800;letter-spacing:.06em;color:var(--ink38);cursor:pointer}
@@ -215,7 +274,10 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
       <div style="display:flex;gap:8px;align-items:center">
         <div class="avatar">汉</div><div class="chip" onclick="toast('连续记录 21 天')">🔥 21</div>
       </div>
-      <div class="chip"><i class="dot"></i>⌚ E500 · 86%</div>
+      <div style="display:flex;gap:6px">
+        <div class="chip"><i class="dot"></i>⌚ E500 · 86%</div>
+        <div class="chip" id="themeBtn" onclick="toggleTheme()">🌙</div>
+      </div>
     </div>
 
     <div class="flowrow">
@@ -798,6 +860,11 @@ function animateRings(scope){
       c.style.strokeDashoffset=dash*(1-p);
     });});
   });
+}
+function toggleTheme(){
+  var s=document.getElementById('screen');
+  s.classList.toggle('dark');
+  document.getElementById('themeBtn').textContent = s.classList.contains('dark') ? '☀️' : '🌙';
 }
 var tt=null;
 function toast(msg){
