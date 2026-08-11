@@ -67,6 +67,10 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 .insight-in .txt b{color:var(--ink92)}
 .ctaline{margin-top:9px;font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--ink55);cursor:pointer}
 .ctaline:hover{color:var(--mint)}
+/* 判断卡数据胶囊 */
+.dchips{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.dchip{font-size:11px;font-weight:700;padding:5px 10px;border-radius:10px;background:rgba(15,23,32,.05);border:1px solid var(--line);color:var(--ink55)}
+.dchip b{font-weight:900;font-size:12.5px;color:var(--ink92)}
 /* buff 行 */
 .buffs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .buff{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink55);cursor:pointer}
@@ -251,7 +255,12 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
     <div class="insight"><div class="insight-in">
       <div class="cap">今日判断</div>
       <div class="htitle">今天,去给强度。</div>
-      <div class="txt">昨晚睡眠把账还清,机能 <b>76(绿区)</b>。支出目标 <b style="color:var(--blue)">50–62</b>,当前 34,傍晚一次 40 分钟中高强度即可达标。</div>
+      <div class="dchips">
+        <span class="dchip">机能 <b style="color:var(--mint)">76</b> · 绿区</span>
+        <span class="dchip">目标 <b style="color:var(--blue)">50–62</b></span>
+        <span class="dchip">当前 <b>34</b></span>
+      </div>
+      <div class="txt" style="margin-top:9px">傍晚一次 40 分钟中高强度即可达标。</div>
       <div class="ctaline" onclick="go('pg-rec')">为什么是 76 · 看账本 →</div>
     </div></div>
 
