@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>biovision 融合原型 v3 · 手环×戒指</title>
+<style>
+:root{
+  --bg:#F7F9FB; --mint:#0DA678; --blue:#1B8FD6; --purple:#6E74C9; --coral:#E24D66; --gold:#D97706; --gray:#B3BAC4;
+  --ink92:#0F1720; --ink55:rgba(15,23,32,.75); --ink38:rgba(15,23,32,.66); --ink25:rgba(15,23,32,.5);
+  --card:#FFFFFF; --card2:rgba(15,23,32,.07); --line:rgba(15,23,32,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh}
+.stage{max-width:1180px;margin:0 auto;padding:26px 18px 40px}
+.grid{display:flex;justify-content:center}
+/* ============ 手机 ============ */
+.phone{width:402px;background:#000;border-radius:54px;padding:6px;box-shadow:0 30px 80px rgba(60,80,100,.3),0 0 0 1px rgba(15,23,32,.08)}
+.screen{position:relative;background:var(--bg);border-radius:48px;overflow:hidden;height:846px}
+.glow{position:absolute;top:-140px;left:50%;transform:translateX(-50%);width:520px;height:340px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(13,166,120,.13),transparent);pointer-events:none}
+/* 路由页面 */
+.page{position:absolute;inset:0;padding:16px 18px 96px;overflow-y:auto;scrollbar-width:none;
+  opacity:0;transform:translateX(26px);pointer-events:none;transition:opacity .22s ease,transform .22s ease}
+.page::-webkit-scrollbar{display:none}
+.page.on{opacity:1;transform:none;pointer-events:auto}
+.page.back{transform:translateX(-26px)}
+/* 通用 */
+.caps{font-size:9.5px;font-weight:800;letter-spacing:.16em;color:var(--ink38);text-transform:uppercase}
+.htitle{font-family:Georgia,"Noto Serif SC","SimSun",serif;font-size:16.5px;font-weight:700;line-height:1.5}
+.h-row{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 10px}
+.h-row .t{font-size:17px;font-weight:800}
+.h-row .t small{display:block;font-size:9px;letter-spacing:.2em;color:var(--ink38);font-weight:800;margin-top:2px}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(140deg,#CDEBE2,#BBD8E9);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ink55)}
+.chip{display:flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;color:var(--ink55);cursor:pointer}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 6px var(--mint)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 15px;margin-top:10px;box-shadow:0 1px 3px rgba(15,23,32,.05)}
+.backbar{display:flex;align-items:center;gap:10px;margin:6px 0 8px}
+.backbtn{width:32px;height:32px;border-radius:50%;background:var(--card);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:var(--ink55);cursor:pointer;font-size:15px;flex:none}
+.backbar .t{font-size:15px;font-weight:800;letter-spacing:.05em}
+.backbar .t small{display:block;font-size:9px;letter-spacing:.2em;color:var(--ink38);font-weight:800}
+.state-word{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--mint);flex:none}
+.toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%) translateY(8px);background:rgba(255,255,255,.97);
+  border:1px solid var(--line);color:var(--ink55);font-size:11.5px;padding:8px 16px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:60}
+.toast.show{opacity:1;transform:translateX(-50%)}
+/* ============ 因果流三环 ============ */
+.flowrow{display:flex;align-items:center;margin-top:8px}
+.r3{width:96px;flex:none;text-align:center;cursor:pointer}
+.r3 svg{width:100%;height:auto}
+.r3 .lab{font-size:9px;font-weight:800;letter-spacing:.1em;margin-top:3px;color:var(--ink38)}
+.r3 .lab b{display:block;font-size:10.5px;margin-top:2px}
+.rv{font-weight:900;fill:var(--ink92)}
+.rs{font-size:8px;fill:rgba(15,23,32,.66);font-weight:700}
+.flow{flex:1;height:2px;margin-top:-26px;background:repeating-linear-gradient(90deg,var(--mint) 0 6px,transparent 6px 14px);
+  animation:flowmv 1.2s linear infinite;opacity:.45}
+@keyframes flowmv{to{background-position:28px 0}}
+/* 解读卡 */
+.insight{position:relative;margin-top:10px;border-radius:20px;padding:1px;
+  background:linear-gradient(120deg,rgba(110,116,201,.55),rgba(13,166,120,.55))}
+.insight-in{background:#FFFFFF;border-radius:19px;padding:14px 16px}
+.insight-in .cap{font-size:9.5px;font-weight:800;letter-spacing:.18em;color:var(--mint);margin-bottom:7px}
+.insight-in .txt{font-size:12.5px;line-height:1.75;color:var(--ink55);margin-top:6px}
+.insight-in .txt b{color:var(--ink92)}
+.ctaline{margin-top:9px;font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--ink55);cursor:pointer}
+.ctaline:hover{color:var(--mint)}
+/* buff 行 */
+.buffs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.buff{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink55);cursor:pointer}
+.buff b{color:var(--mint)} .buff b.neg{color:var(--coral)}
+/* ECG 条 */
+.ecg svg{width:100%;height:44px;display:block;margin-top:8px}
+.mbtn{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:#FFFFFF;background:var(--mint);border-radius:999px;padding:5px 13px;cursor:pointer;flex:none}
+/* 时间线 */
+.tl .it{display:flex;gap:12px;padding:8px 2px;border-bottom:1px dashed rgba(15,23,32,.08);font-size:12px;color:var(--ink55)}
+.tl .it:last-child{border-bottom:none}
+.tl .tm{width:44px;color:var(--ink38);font-variant-numeric:tabular-nums;font-weight:700;font-size:11px;padding-top:1px}
+.tl b{color:var(--ink92);font-weight:700}
+/* ============ 详情页模板 ============ */
+.bigring{display:flex;justify-content:center;margin:4px 0 0}
+.bigring svg{width:200px;height:auto}
+.sub{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid rgba(15,23,32,.07)}
+.sub:last-child{border-bottom:none}
+.sub .ic{width:30px;height:30px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.sub .mid{flex:1;min-width:0}
+.sub .mid .caps{display:block;margin-bottom:6px}
+.bar{position:relative;height:5px;border-radius:99px;display:flex;gap:2px}
+.bar i{height:100%;border-radius:99px;opacity:.3}
+.bar .s1{width:33%;background:var(--gold)} .bar .s2{width:34%;background:var(--gray)} .bar .s3{width:33%;background:var(--mint)}
+.bar .mk{position:absolute;top:-3.5px;width:12px;height:12px;border-radius:50%;border:2.5px solid var(--bg);transform:translateX(-50%)}
+.sub .val{text-align:right;flex:none;width:74px}
+.sub .val .n{font-size:16px;font-weight:900;font-variant-numeric:tabular-nums}
+.sub .val .n small{font-size:10px;color:var(--ink38);font-weight:700}
+.sub .val .d{font-size:9.5px;font-weight:800;margin-top:2px}
+.up{color:var(--mint)} .dn{color:var(--gold)} .flat{color:var(--ink38)}
+.legend{display:flex;gap:14px;justify-content:center;margin-top:10px}
+.legend span{font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--ink38);display:flex;align-items:center;gap:5px}
+.legend i{width:8px;height:8px;border-radius:99px;display:inline-block;opacity:.7}
+/* 账本 */
+.ledger .kv{border-bottom:1px dashed rgba(15,23,32,.08)}
+.ledger .kv:last-child{border-bottom:none}
+.kv{display:flex;justify-content:space-between;padding:8px 2px;font-size:12px;color:var(--ink55)}
+.kv b{color:var(--ink92);font-weight:700;font-variant-numeric:tabular-nums}
+/* 睡眠结构 */
+.hypno{display:flex;height:24px;border-radius:8px;overflow:hidden;margin-top:10px}
+.hypno i{height:100%}
+.hlegend{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+.hlegend span{font-size:9.5px;color:var(--ink38);display:flex;gap:5px;align-items:center;font-weight:700}
+.hlegend i{width:8px;height:8px;border-radius:3px}
+/* 近7天柱 */
+.week{display:flex;justify-content:space-between;align-items:flex-end;height:96px;margin-top:12px;padding:0 4px}
+.wcol{width:11%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.wbar{width:100%;border-radius:6px 6px 3px 3px}
+.wcol span{font-size:9px;color:var(--ink38);font-weight:700}
+.dual{display:flex;justify-content:space-between;align-items:flex-end;height:96px;margin-top:12px;padding:0 4px}
+.dual .wcol{gap:4px}
+.dual .pair{display:flex;gap:3px;align-items:flex-end;height:76px;width:100%}
+.dual .pair i{flex:1;border-radius:4px 4px 2px 2px}
+/* 活动行 */
+.act{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid rgba(15,23,32,.07)}
+.act:last-child{border:none}
+.act .ic{width:34px;height:34px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.act .m{flex:1}.act .m b{font-size:13px;font-weight:800;display:block}
+.act .m span{font-size:10.5px;color:var(--ink38)}
+.act .s{font-size:15px;font-weight:900;color:var(--blue)}
+.cbtn{font-size:9.5px;font-weight:800;padding:4px 10px;border-radius:999px;cursor:pointer;flex:none}
+.cbtn.ok{color:#FFFFFF;background:var(--mint)}
+.cbtn.ed{color:var(--ink55);background:var(--card);border:1px solid var(--line)}
+/* 体征 tiles */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 13px;cursor:pointer;box-shadow:0 1px 3px rgba(15,23,32,.05)}
+.tile .v{font-size:21px;font-weight:900;margin-top:5px;font-variant-numeric:tabular-nums}
+.tile .v small{font-size:10.5px;font-weight:700;color:var(--ink38);margin-left:2px}
+.tile .base{font-size:9.5px;color:var(--ink38);margin-top:3px}
+/* 压力四状态 */
+.states{display:flex;gap:4px;margin-top:12px}
+.state{flex:1;text-align:center;font-size:10px;font-weight:800;letter-spacing:.04em;padding:9px 0;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--ink38)}
+.state.on{background:rgba(13,166,120,.16);border-color:rgba(13,166,120,.45);color:var(--mint)}
+/* 健康页 */
+.spark{width:86px;height:22px;flex:none}
+.mrow{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid rgba(15,23,32,.07);cursor:pointer;font-size:12.5px;font-weight:700}
+.mrow:last-child{border:none}
+.mrow .ic{width:32px;height:32px;border-radius:11px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:14px}
+.mrow span{flex:1}
+.mrow .sub2{font-size:10px;color:var(--ink38);font-weight:600;margin-top:1px}
+.mrow .arr{color:var(--ink38)}
+/* 归因发散图 */
+.jhead{display:flex;justify-content:space-between;font-size:9px;font-weight:800;letter-spacing:.12em}
+.jrow{display:flex;align-items:center;gap:8px;padding:7px 0}
+.jlab{width:88px;font-size:11px;color:var(--ink55);font-weight:700;text-align:right;line-height:1.3}
+.jlab .new{font-size:8px;color:#FFFFFF;background:var(--mint);border-radius:4px;padding:1px 4px;font-weight:900;margin-left:3px}
+.jax{flex:1;display:flex;height:13px;position:relative}
+.jax::before{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:rgba(15,23,32,.2)}
+.jax .l{width:50%;display:flex;justify-content:flex-end}
+.jax .r{width:50%}
+.jax i{height:100%;border-radius:3px;opacity:.85}
+.jv{width:40px;font-size:11px;font-weight:800;text-align:right}
+.jv.pos{color:var(--mint)} .jv.neg{color:var(--gold)}
+.addbtn{margin-top:12px;width:100%;border:1px dashed rgba(15,23,32,.2);border-radius:14px;background:none;
+  color:var(--ink55);font-size:12px;font-weight:700;padding:11px;cursor:pointer}
+/* 周报 */
+.progress{height:8px;border-radius:99px;background:rgba(15,23,32,.1);overflow:hidden;margin-top:12px}
+.progress i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--mint),var(--blue))}
+.mini{width:22px;height:22px;flex:none}
+.habits .kv{align-items:center}
+/* 教练页 */
+#pg-coach{display:flex;flex-direction:column}
+#pg-coach .sugg{margin-top:auto;padding-top:12px}
+.chat{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.bub{max-width:86%;padding:11px 14px;border-radius:16px;font-size:12.5px;line-height:1.75}
+.bub.me{align-self:flex-end;background:#D9F2EA;border-bottom-right-radius:5px}
+.bub.ai{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px;color:var(--ink55)}
+.bub.ai b{color:var(--ink92)}
+.aiavatar{display:flex;gap:8px;align-items:center;font-size:10px;color:var(--ink38);font-weight:800;letter-spacing:.1em}
+.aidot{width:20px;height:20px;border-radius:50%;background:linear-gradient(140deg,#0DA678,#1B8FD6);
+  display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#FFFFFF;flex:none}
+.datacard{margin-top:8px;background:rgba(13,166,120,.08);border:1px solid rgba(13,166,120,.25);border-radius:12px;padding:9px 11px}
+.microbars{display:flex;gap:3px;align-items:flex-end;height:26px;margin-top:6px}
+.microbars i{flex:1;border-radius:2px;background:rgba(13,166,120,.45)}
+.sugg{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.sugg span{font-size:10.5px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid rgba(13,166,120,.35);color:var(--mint);cursor:pointer}
+.inputbar{position:sticky;bottom:0;margin-top:10px;display:flex;gap:8px}
+.inputbar input{flex:1;border:1px solid transparent;border-radius:999px;
+  background:linear-gradient(#FFFFFF,#FFFFFF) padding-box,linear-gradient(120deg,rgba(13,166,120,.6),rgba(27,143,214,.6)) border-box;
+  padding:11px 16px;color:var(--ink92);font-size:12.5px;outline:none}
+.inputbar .send{width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,#0DA678,#1B8FD6);
+  border:none;color:#FFFFFF;font-weight:900;cursor:pointer}
+/* 底部导航 */
+.nav{position:absolute;left:0;right:0;bottom:0;height:80px;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:0 6px 14px;z-index:50}
+.nit{width:60px;text-align:center;font-size:9.5px;font-weight:800;letter-spacing:.06em;color:var(--ink38);cursor:pointer}
+.nit .ic{font-size:17px;margin-bottom:3px}
+.nit.on{color:var(--mint)}
+.nfab{width:54px;height:54px;border-radius:50%;margin-top:-26px;background:linear-gradient(140deg,#0DA678,#0A8B68);
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#FFFFFF;
+  box-shadow:0 8px 22px rgba(13,166,120,.35);cursor:pointer;flex:none}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="grid">
+    <div class="phone"><div class="screen" id="screen">
+      <div class="glow"></div>
+
+  <!-- ============ 今日 ============ -->
+  <div class="page on" id="pg-today">
+    <div class="h-row">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="avatar">汉</div><div class="chip" onclick="toast('连续记录 21 天')">🔥 21</div>
+      </div>
+      <div class="chip"><i class="dot"></i>⌚ E500 · 86%</div>
+    </div>
+
+    <div class="flowrow">
+      <div class="r3" onclick="go('pg-sleep')">
+        <svg viewBox="0 0 96 96">
+          <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(15,23,32,.08)" stroke-width="7"/>
+          <circle class="arc" cx="48" cy="48" r="38" fill="none" stroke="#6E74C9" stroke-width="7" stroke-linecap="round"
+            transform="rotate(-90 48 48)" stroke-dasharray="238.8" stroke-dashoffset="238.8" data-p="88"/>
+          <text x="48" y="54" text-anchor="middle" class="rv" font-size="21">88</text>
+        </svg>
+        <div class="lab">存入<b style="color:#6E74C9">睡眠</b></div>
+      </div>
+      <div class="flow"></div>
+      <div class="r3" style="width:110px" onclick="go('pg-rec')">
+        <svg viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(15,23,32,.08)" stroke-width="8"/>
+          <circle class="arc" cx="55" cy="55" r="44" fill="none" stroke="#0DA678" stroke-width="8" stroke-linecap="round"
+            transform="rotate(-90 55 55)" stroke-dasharray="276.5" stroke-dashoffset="276.5" data-p="76"/>
+          <text x="55" y="61" text-anchor="middle" class="rv" font-size="26">76</text>
+        </svg>
+        <div class="lab">余额<b style="color:#0DA678">机能分</b></div>
+      </div>
+      <div class="flow" style="animation-duration:1.6s"></div>
+      <div class="r3" onclick="go('pg-strain')">
+        <svg viewBox="0 0 96 96">
+          <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(15,23,32,.08)" stroke-width="7"/>
+          <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(15,23,32,.22)" stroke-width="7"
+            transform="rotate(-90 48 48)" stroke-dasharray="28.7 210.1" stroke-dashoffset="-119.4"/>
+          <circle class="arc" cx="48" cy="48" r="38" fill="none" stroke="#1B8FD6" stroke-width="7" stroke-linecap="round"
+            transform="rotate(-90 48 48)" stroke-dasharray="238.8" stroke-dashoffset="238.8" data-p="34"/>
+          <text x="48" y="54" text-anchor="middle" class="rv" font-size="21">34</text>
+        </svg>
+        <div class="lab">支出<b style="color:#1B8FD6">负荷</b></div>
+      </div>
+    </div>
+
+    <div class="insight"><div class="insight-in">
+      <div class="cap">今日判断</div>
+      <div class="htitle">今天,去给强度。</div>
+      <div class="txt">昨晚睡眠把账还清,机能 <b>76(绿区)</b>。支出目标 <b style="color:var(--blue)">50–62</b>,当前 34,傍晚一次 40 分钟中高强度即可达标。</div>
+      <div class="ctaline" onclick="go('pg-rec')">为什么是 76 · 看账本 →</div>
+    </div></div>
+
+    <div class="buffs">
+      <span class="buff" onclick="go('pg-journal')">☕ 咖啡因减益 <b class="neg">至 23:00</b></span>
+      <span class="buff" onclick="toast('天时:天气/空气质量等不可控外因,不赖你')">🌤 天时 <b>空气优 · 宜户外</b></span>
+      <span class="buff" onclick="go('pg-weekly')">🎯 本周聚焦 <b>睡眠规律</b></span>
+    </div>
+
+    <div class="card ecg" onclick="go('pg-heart')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">ECG 签名 · <b style="color:var(--mint)">500Hz 实测</b></span>
+        <span class="mbtn" onclick="event.stopPropagation();toast('60 秒测量 · 手环侧面电极(演示)')">测量</span>
+      </div>
+      <svg viewBox="0 0 320 44">
+        <polyline points="0,26 22,26 30,22 38,30 46,26 60,26 66,8 72,40 78,26 100,26 108,22 116,30 124,26 140,26 146,8 152,40 158,26 180,26 188,22 196,30 204,26 220,26 226,8 232,40 238,26 262,26 270,22 278,30 286,26 302,26 308,12 314,36 320,26"
+          fill="none" stroke="#0DA678" stroke-width="1.6" opacity=".9"/>
+      </svg>
+      <div style="font-size:9.5px;color:var(--ink25);margin-top:4px">10:17 窦性节律未见异常(非临床) · 波形为 E500 真机实测 · 点卡片看心脏健康 ›</div>
+    </div>
+
+    <div class="card">
+      <span class="caps">我的一天</span>
+      <div class="tl" style="margin-top:6px">
+        <div class="it"><span class="tm">06:54</span><span>醒来 · 睡眠 <b>88</b></span></div>
+        <div class="it"><span class="tm">08:10</span><span>晨走 32 分钟 · 支出 <b>+12</b>(自动识别)</span></div>
+        <div class="it"><span class="tm">18:00</span><span style="color:var(--ink38)">建议:训练窗口(距目标还差 <b style="color:var(--ink55)">16+</b>)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 睡眠详情 ============ -->
+  <div class="page" id="pg-sleep">
+    <div class="backbar"><div class="backbtn" onclick="go('pg-today',true)">‹</div>
+      <div class="t">睡眠 · 存入<small>昨晚 23:12 – 06:54</small></div></div>
+    <div class="bigring">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,23,32,.08)" stroke-width="12"/>
+        <circle class="arc" cx="100" cy="100" r="80" fill="none" stroke="#6E74C9" stroke-width="12" stroke-linecap="round"
+          transform="rotate(-90 100 100)" stroke-dasharray="502.7" stroke-dashoffset="502.7" data-p="88"/>
+        <text x="100" y="96" text-anchor="middle" class="rv" font-size="42">88</text>
+        <text x="100" y="122" text-anchor="middle" font-size="10" fill="rgba(15,23,32,.75)">7h 42m / 需求 8h 00m</text>
+      </svg>
+    </div>
+    <div class="insight"><div class="insight-in">
+      <div class="htitle">睡够了,但作息在漂。</div>
+      <div class="txt">时长和效率都到位,拖后腿的是<b>规律性</b>——本周入睡时刻漂移超过 40 分钟。今晚 <b>23:00 前</b>躺下,就能把 88 推过 90。</div>
+    </div></div>
+    <div class="card" style="padding-top:4px;padding-bottom:4px">
+      <div class="sub"><div class="ic">⏱</div>
+        <div class="mid"><span class="caps">时长达成</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:88%;background:#6E74C9"></span></div></div>
+        <div class="val"><div class="n">96<small>%</small></div><div class="d up">▲ 基线</div></div></div>
+      <div class="sub"><div class="ic">🌗</div>
+        <div class="mid"><span class="caps">睡眠规律</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:55%;background:#6E74C9"></span></div></div>
+        <div class="val"><div class="n">82</div><div class="d flat">— 漂移 40m</div></div></div>
+      <div class="sub"><div class="ic">⚡</div>
+        <div class="mid"><span class="caps">睡眠效率</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:86%;background:#6E74C9"></span></div></div>
+        <div class="val"><div class="n">94<small>%</small></div><div class="d up">▲ 基线</div></div></div>
+      <div class="sub"><div class="ic">🫁</div>
+        <div class="mid"><span class="caps">夜间血氧</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:92%;background:#6E74C9"></span></div></div>
+        <div class="val"><div class="n">98<small>%</small></div><div class="d flat">最低 94</div></div></div>
+      <div class="legend"><span><i style="background:var(--gold)"></i>欠佳</span><span><i style="background:var(--gray)"></i>及格</span><span><i style="background:var(--mint)"></i>理想</span></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">昨晚结构</span>
+        <span style="font-size:10px;font-weight:800;color:var(--ink38);cursor:pointer" onclick="toast('手动修正入口(口碑细节)')">修正</span>
+      </div>
+      <div class="hypno">
+        <i style="width:6%;background:#E3E6F4"></i><i style="width:24%;background:#4C55A8"></i><i style="width:13%;background:#6E74C9"></i><i style="width:22%;background:#4C55A8"></i><i style="width:4%;background:#E3E6F4"></i><i style="width:12%;background:#8F97DD"></i><i style="width:15%;background:#4C55A8"></i><i style="width:4%;background:#8F97DD"></i>
+      </div>
+      <div class="hlegend">
+        <span><i style="background:#4C55A8"></i>深睡 1h48m</span><span><i style="background:#8F97DD"></i>REM 1h36m</span>
+        <span><i style="background:#6E74C9"></i>浅睡 3h56m</span><span><i style="background:#E3E6F4"></i>清醒 22m</span>
+      </div>
+      <div class="kv" style="margin-top:4px"><span>起夜</span><b>1 次 · 共 6 分钟</b></div>
+      <div class="kv"><span>午休 13:20 · 24 分钟</span><b style="color:var(--mint)">计入存入 +2</b></div>
+    </div>
+    <div class="card">
+      <span class="caps">近 7 天</span>
+      <div class="week">
+        <div class="wcol"><div class="wbar" style="height:74%;background:#6E74C9"></div><span>三</span></div>
+        <div class="wcol"><div class="wbar" style="height:85%;background:#6E74C9"></div><span>四</span></div>
+        <div class="wcol"><div class="wbar" style="height:90%;background:#6E74C9"></div><span>五</span></div>
+        <div class="wcol"><div class="wbar" style="height:68%;background:#4C55A8"></div><span>六</span></div>
+        <div class="wcol"><div class="wbar" style="height:86%;background:#6E74C9"></div><span>日</span></div>
+        <div class="wcol"><div class="wbar" style="height:84%;background:#6E74C9"></div><span>一</span></div>
+        <div class="wcol"><div class="wbar" style="height:88%;background:#6E74C9;outline:2px solid rgba(15,23,32,.66);outline-offset:2px"></div><span>今</span></div>
+      </div>
+      <p style="font-size:10.5px;color:var(--ink38);margin-top:8px">周六晚睡拖到 68(深色)——入睡漂移仍是主要失分项。</p>
+    </div>
+  </div>
+
+  <!-- ============ 机能详情 ============ -->
+  <div class="page" id="pg-rec">
+    <div class="backbar"><div class="backbtn" onclick="go('pg-today',true)">‹</div>
+      <div class="t">机能分 · 余额<small>今晨结算</small></div></div>
+    <div class="bigring">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,23,32,.08)" stroke-width="12"/>
+        <circle class="arc" cx="100" cy="100" r="80" fill="none" stroke="#0DA678" stroke-width="12" stroke-linecap="round"
+          transform="rotate(-90 100 100)" stroke-dasharray="502.7" stroke-dashoffset="502.7" data-p="76"/>
+        <text x="100" y="96" text-anchor="middle" class="rv" font-size="42">76</text>
+        <text x="100" y="122" text-anchor="middle" font-size="10" fill="#0DA678">绿区 · 可以给强度</text>
+      </svg>
+    </div>
+    <div class="card ledger">
+      <span class="caps">今晨账本 · 分数摊开算</span>
+      <div class="kv" style="margin-top:4px"><span>昨日结余</span><b>72</b></div>
+      <div class="kv"><span>存入 · 昨晚睡眠 88 折算</span><b style="color:var(--mint)">+34</b></div>
+      <div class="kv"><span>支出 · 昨日负荷 58 折算</span><b style="color:var(--blue)">−28</b></div>
+      <div class="kv"><span>修正 · 睡眠债 −1h12m</span><b style="color:var(--gold)">−2</b></div>
+      <div class="kv"><span style="font-weight:800;color:var(--ink92)">今晨机能分</span><b style="color:var(--mint);font-size:15px">76</b></div>
+    </div>
+    <div class="card" style="padding-top:4px;padding-bottom:4px">
+      <div class="sub"><div class="ic">💓</div>
+        <div class="mid"><span class="caps">夜间 HRV</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:74%;background:#0DA678"></span></div></div>
+        <div class="val"><div class="n">62<small>ms</small></div><div class="d up">▲ 8% vs 30天</div></div></div>
+      <div class="sub"><div class="ic">🫀</div>
+        <div class="mid"><span class="caps">静息心率</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:78%;background:#0DA678"></span></div></div>
+        <div class="val"><div class="n">58<small>bpm</small></div><div class="d up">▼ 1 vs 30天</div></div></div>
+      <div class="sub"><div class="ic">🫁</div>
+        <div class="mid"><span class="caps">夜间血氧</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:90%;background:#0DA678"></span></div></div>
+        <div class="val"><div class="n">98<small>%</small></div><div class="d flat">— 稳定</div></div></div>
+      <div class="sub"><div class="ic">🌙</div>
+        <div class="mid"><span class="caps">睡眠得分</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:84%;background:#0DA678"></span></div></div>
+        <div class="val"><div class="n">88</div><div class="d up">▲ 基线</div></div></div>
+      <div class="legend"><span>今日 vs 你的前 30 天基线</span></div>
+    </div>
+    <div class="card">
+      <span class="caps">近 7 天</span>
+      <div class="week">
+        <div class="wcol"><div class="wbar" style="height:48%;background:#D97706"></div><span>三</span></div>
+        <div class="wcol"><div class="wbar" style="height:71%;background:#0DA678"></div><span>四</span></div>
+        <div class="wcol"><div class="wbar" style="height:80%;background:#0DA678"></div><span>五</span></div>
+        <div class="wcol"><div class="wbar" style="height:30%;background:#E24D66"></div><span>六</span></div>
+        <div class="wcol"><div class="wbar" style="height:66%;background:#0DA678"></div><span>日</span></div>
+        <div class="wcol"><div class="wbar" style="height:72%;background:#0DA678"></div><span>一</span></div>
+        <div class="wcol"><div class="wbar" style="height:76%;background:#0DA678;outline:2px solid rgba(15,23,32,.66);outline-offset:2px"></div><span>今</span></div>
+      </div>
+      <p style="font-size:10.5px;color:var(--ink38);margin-top:8px">周六掉到红区 30 后连升三天,今天回到绿区。</p>
+    </div>
+  </div>
+
+  <!-- ============ 支出详情 ============ -->
+  <div class="page" id="pg-strain">
+    <div class="backbar"><div class="backbtn" onclick="go('pg-today',true)">‹</div>
+      <div class="t">支出 · 负荷<small>今日累计</small></div></div>
+    <div class="bigring">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,23,32,.08)" stroke-width="12"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,23,32,.5)" stroke-width="12"
+          transform="rotate(-90 100 100)" stroke-dasharray="60.3 442.4" stroke-dashoffset="-251.3"/>
+        <circle class="arc" cx="100" cy="100" r="80" fill="none" stroke="#1B8FD6" stroke-width="12" stroke-linecap="round"
+          transform="rotate(-90 100 100)" stroke-dasharray="502.7" stroke-dashoffset="502.7" data-p="34"/>
+        <text x="100" y="96" text-anchor="middle" class="rv" font-size="42">34</text>
+        <text x="100" y="122" text-anchor="middle" font-size="10" fill="rgba(15,23,32,.75)">目标区间 50 – 62(白色刻痕)</text>
+      </svg>
+    </div>
+    <div class="card">
+      <span class="caps">会呼吸的目标</span>
+      <div style="font-size:13px;font-weight:800;margin-top:7px">今日目标 <span style="color:var(--blue)">50 – 62</span> ← 由今晨机能 <span style="color:var(--mint)">76</span> 决定</div>
+      <div class="kv" style="margin-top:6px"><span>机能 ≥ 68(绿区)</span><b>50 – 62 · 可以攻坚</b></div>
+      <div class="kv"><span>机能 40 – 67(黄区)</span><b>35 – 49 · 维持即可</b></div>
+      <div class="kv"><span>机能 &lt; 40(红区)</span><b>主动恢复日 · 散步拉伸</b></div>
+    </div>
+    <div class="card" style="padding-top:4px;padding-bottom:4px">
+      <div class="sub"><div class="ic">🏃</div>
+        <div class="mid"><span class="caps">有氧时长 · 1–3 区</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:38%;background:#1B8FD6"></span></div></div>
+        <div class="val"><div class="n">0:52</div><div class="d flat">时长</div></div></div>
+      <div class="sub"><div class="ic">🔥</div>
+        <div class="mid"><span class="caps">高强时长 · 4–5 区</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:8%;background:#1B8FD6"></span></div></div>
+        <div class="val"><div class="n">0:00</div><div class="d dn">未开始</div></div></div>
+      <div class="sub"><div class="ic">🏋️</div>
+        <div class="mid"><span class="caps">力量训练</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:8%;background:#1B8FD6"></span></div></div>
+        <div class="val"><div class="n">0:00</div><div class="d dn">未开始</div></div></div>
+      <div class="sub"><div class="ic">👟</div>
+        <div class="mid"><span class="caps">步数</span>
+          <div class="bar"><i class="s1"></i><i class="s2"></i><i class="s3"></i><span class="mk" style="left:52%;background:#1B8FD6"></span></div></div>
+        <div class="val"><div class="n">6,842</div><div class="d flat">— 基线</div></div></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">今日活动 · 自动识别</span>
+        <span style="font-size:10px;font-weight:800;color:var(--ink38);cursor:pointer" onclick="toast('手动记录将在完整版提供')">＋ 记录</span>
+      </div>
+      <div class="act">
+        <div class="ic">🚶</div>
+        <div class="m"><b>晨走 <span style="font-size:9px;color:var(--mint);font-weight:800">自动识别</span></b><span>08:10 · 32 分钟 · 均心率 96 · 1-2 区为主</span></div>
+        <div class="s">+12</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;padding-left:46px">
+        <span class="cbtn ok" onclick="toast('已确认 · 归入今日支出')">确认 ✓</span>
+        <span class="cbtn ed" onclick="toast('修正类型/时长(演示)')">修正</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="caps">支出(蓝) vs 机能(绿) · 近 7 天</span>
+      <div class="dual">
+        <div class="wcol"><div class="pair"><i style="height:78%;background:#1B8FD6"></i><i style="height:48%;background:#D97706"></i></div><span>三</span></div>
+        <div class="wcol"><div class="pair"><i style="height:45%;background:#1B8FD6"></i><i style="height:71%;background:#0DA678"></i></div><span>四</span></div>
+        <div class="wcol"><div class="pair"><i style="height:58%;background:#1B8FD6"></i><i style="height:80%;background:#0DA678"></i></div><span>五</span></div>
+        <div class="wcol"><div class="pair"><i style="height:88%;background:#1B8FD6"></i><i style="height:30%;background:#E24D66"></i></div><span>六</span></div>
+        <div class="wcol"><div class="pair"><i style="height:30%;background:#1B8FD6"></i><i style="height:66%;background:#0DA678"></i></div><span>日</span></div>
+        <div class="wcol"><div class="pair"><i style="height:58%;background:#1B8FD6"></i><i style="height:72%;background:#0DA678"></i></div><span>一</span></div>
+        <div class="wcol"><div class="pair"><i style="height:34%;background:#1B8FD6"></i><i style="height:76%;background:#0DA678"></i></div><span>今</span></div>
+      </div>
+      <p style="font-size:10.5px;color:var(--ink38);margin-top:8px">周六支出 88 压过机能(红区 30)→ 周日身体自动要求还账。蓝绿长期倒挂 = 过训风险。</p>
+    </div>
+  </div>
+
+  <!-- ============ 体征 ============ -->
+  <div class="page" id="pg-vitals">
+    <div class="h-row"><div class="t">体征<small>VITALS · 今日</small></div>
+      <div class="chip" onclick="toast('演示:仅今日数据')">今日 ▾</div></div>
+
+    <div class="card" onclick="toast('哨兵:HRV/静息心率/血氧/睡眠 四信号对 30 天个人基线的偏移监测')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">哨兵 · 病兆雷达</span>
+        <span class="state-word">暂无迹象</span>
+      </div>
+      <p style="font-size:11px;color:var(--ink55);margin-top:7px">HRV ✓ 静息心率 ✓ 血氧 ✓ 睡眠 ✓ —— 四项信号都在你的个人范围内。</p>
+    </div>
+
+    <div class="card" onclick="go('pg-stress')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">白天压力 · 状态词</span>
+        <span style="color:var(--ink38);font-size:12px">›</span>
+      </div>
+      <div class="states">
+        <span class="state">紧绷</span><span class="state">投入</span><span class="state on">松弛</span><span class="state">复原</span>
+      </div>
+      <p style="font-size:10.5px;color:var(--ink38);margin-top:9px">当前:<b style="color:var(--mint)">松弛</b> · 今晨有一段 34 分钟「紧绷」,已回落</p>
+    </div>
+
+    <div class="duo">
+      <div class="tile" onclick="go('pg-rec')"><span class="caps">夜间 HRV</span><div class="v">62<small>ms</small></div><div class="base"><span class="up">▲8%</span> vs 30 天基线</div></div>
+      <div class="tile" onclick="go('pg-rec')"><span class="caps">静息心率</span><div class="v">58<small>bpm</small></div><div class="base"><span class="up">▼1</span> vs 基线</div></div>
+      <div class="tile" onclick="go('pg-sleep')"><span class="caps">夜间血氧</span><div class="v">98<small>%</small></div><div class="base">最低 94 · 稳定</div></div>
+      <div class="tile" onclick="toast('生物钟:按入睡/醒来时刻的漂移度估算(简化版,无体温)')"><span class="caps">生物钟</span><div class="v" style="font-size:15px;color:var(--mint)">基本对齐</div><div class="base">本周作息漂移 40 分钟</div></div>
+    </div>
+
+    <div class="card" onclick="go('pg-sleep')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">昨晚睡眠</span><span style="color:var(--ink38);font-size:12px">›</span>
+      </div>
+      <div class="kv" style="margin-top:2px"><span>得分 <b style="color:#6E74C9">88</b> · 7h42m</span><b>深睡 1h48m · REM 1h36m</b></div>
+    </div>
+
+    <div class="card" onclick="go('pg-heart')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">心脏健康</span><span class="state-word">状态良好 ›</span>
+      </div>
+      <div class="kv" style="margin-top:2px"><span>静息 58 · ECG ✓ 窦性节律</span><b>血压 118/76 · 已校准</b></div>
+    </div>
+  </div>
+
+  <!-- ============ 压力详情 ============ -->
+  <div class="page" id="pg-stress">
+    <div class="backbar"><div class="backbtn" onclick="go('pg-vitals',true)">‹</div>
+      <div class="t">白天压力<small>3:00 — 现在 · 10:32 更新</small></div></div>
+    <div class="insight"><div class="insight-in">
+      <div class="htitle">大体松弛,一段紧绷已过去。</div>
+      <div class="txt">最长紧绷段 <b>09:05 起,持续 34 分钟</b>(HR+HRV 偏离日间基线)。现在是安排深度工作的好窗口。</div>
+    </div></div>
+    <div class="card">
+      <span class="caps">全天状态 · 词做纵轴,不给数字</span>
+      <svg viewBox="0 0 320 100" style="width:100%;height:auto;margin-top:10px">
+        <line x1="40" y1="14" x2="315" y2="14" stroke="rgba(226,77,102,.15)"/>
+        <line x1="40" y1="34" x2="315" y2="34" stroke="rgba(27,143,214,.12)"/>
+        <line x1="40" y1="54" x2="315" y2="54" stroke="rgba(13,166,120,.12)"/>
+        <line x1="40" y1="74" x2="315" y2="74" stroke="rgba(110,116,201,.15)"/>
+        <text x="2" y="17" font-size="8.5" fill="#E24D66" font-weight="700">紧绷</text>
+        <text x="2" y="37" font-size="8.5" fill="#1B8FD6" font-weight="700">投入</text>
+        <text x="2" y="57" font-size="8.5" fill="#0DA678" font-weight="700">松弛</text>
+        <text x="2" y="77" font-size="8.5" fill="#6E74C9" font-weight="700">复原</text>
+        <polyline points="40,74 182,74 182,54 229,54 229,34 248,34 248,54 262,54 262,14 283,14 283,54 315,54"
+          fill="none" stroke="rgba(15,23,32,.75)" stroke-width="1.8"/>
+        <polyline points="262,14 283,14" fill="none" stroke="#E24D66" stroke-width="3"/>
+        <circle cx="315" cy="54" r="4" fill="#0DA678"/>
+        <text x="100" y="9" font-size="8" fill="rgba(15,23,32,.66)">🌙 睡眠</text>
+        <text x="228" y="9" font-size="8" fill="rgba(15,23,32,.66)">🏃 豁免</text>
+        <text x="40" y="97" font-size="8.5" fill="rgba(15,23,32,.66)">3:00</text>
+        <text x="182" y="97" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.66)">6:54</text>
+        <text x="238" y="97" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.66)">8:10</text>
+        <text x="315" y="97" text-anchor="end" font-size="8.5" fill="rgba(15,23,32,.66)">现在</text>
+      </svg>
+      <div class="kv" style="margin-top:8px"><span>紧绷合计</span><b style="color:var(--coral)">34 分钟</b></div>
+      <div class="kv"><span>复原合计(睡眠)</span><b style="color:var(--purple)">3h 54m</b></div>
+      <p style="font-size:9.5px;color:var(--ink25);margin-top:4px">运动时段的高唤起不计入压力(晨走已豁免)。</p>
+    </div>
+    <div class="card">
+      <span class="caps">今天 vs 典型周二</span>
+      <div style="margin-top:10px;font-size:10px;color:var(--ink55);font-weight:700;margin-bottom:5px">今天</div>
+      <div style="display:flex;height:13px;border-radius:99px;overflow:hidden;gap:2px">
+        <i style="width:52%;background:#6E74C9;opacity:.85"></i><i style="width:36%;background:#0DA678;opacity:.85"></i><i style="width:6%;background:#1B8FD6;opacity:.85"></i><i style="width:6%;background:#E24D66;opacity:.9"></i></div>
+      <div style="margin-top:10px;font-size:10px;color:var(--ink55);font-weight:700;margin-bottom:5px">典型周二</div>
+      <div style="display:flex;height:13px;border-radius:99px;overflow:hidden;gap:2px;opacity:.5">
+        <i style="width:46%;background:#6E74C9"></i><i style="width:34%;background:#0DA678"></i><i style="width:8%;background:#1B8FD6"></i><i style="width:12%;background:#E24D66"></i></div>
+      <div class="legend" style="margin-top:10px"><span><i style="background:#6E74C9"></i>复原</span><span><i style="background:#0DA678"></i>松弛</span><span><i style="background:#1B8FD6"></i>投入</span><span><i style="background:#E24D66"></i>紧绷</span></div>
+      <p style="font-size:10.5px;color:var(--ink38);margin-top:8px">紧绷占比 6%,典型周二是 12% —— 今天比往常的周二更平静。</p>
+    </div>
+  </div>
+
+  <!-- ============ 心脏健康 ============ -->
+  <div class="page" id="pg-heart">
+    <div class="backbar"><div class="backbtn" onclick="go('pg-vitals',true)">‹</div>
+      <div class="t">心脏健康<small>HEART · E500 强项域</small></div>
+      <span class="state-word" style="margin-left:auto">状态良好</span></div>
+    <div class="insight"><div class="insight-in">
+      <div class="htitle">心脏在慢慢变强。</div>
+      <div class="txt">静息心率 90 天下降 <b>2 bpm</b>,今晨 58。有氧底子在涨,保持每周 3 次 1–3 区训练。</div>
+    </div></div>
+    <div class="card">
+      <span class="caps">今日心率范围 · 静息 58</span>
+      <svg viewBox="0 0 320 78" style="width:100%;height:auto;margin-top:10px">
+        <line x1="14" y1="57" x2="310" y2="57" stroke="rgba(13,166,120,.35)" stroke-dasharray="3 4"/>
+        <text x="313" y="60" font-size="8" fill="#0DA678" text-anchor="end"></text>
+        <rect x="30"  y="54" width="34" height="8"  rx="4" fill="rgba(110,116,201,.55)"/>
+        <rect x="86"  y="44" width="34" height="16" rx="4" fill="rgba(27,143,214,.5)"/>
+        <rect x="142" y="25" width="34" height="33" rx="4" fill="rgba(27,143,214,.75)"/>
+        <rect x="198" y="40" width="34" height="19" rx="4" fill="rgba(27,143,214,.5)"/>
+        <rect x="254" y="47" width="34" height="12" rx="4" fill="rgba(27,143,214,.4)"/>
+        <text x="47"  y="74" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.66)">3–6时</text>
+        <text x="103" y="74" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.66)">6–8时</text>
+        <text x="159" y="74" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.66)">8–9时 🏃</text>
+        <text x="215" y="74" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.66)">9–10时</text>
+        <text x="271" y="74" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.66)">10时–</text>
+        <text x="159" y="18" text-anchor="middle" font-size="8.5" fill="rgba(15,23,32,.7)">峰值 121(晨走)</text>
+      </svg>
+      <p style="font-size:9.5px;color:var(--ink25);margin-top:4px">虚线 = 静息基线 58 · 全天区间 54 – 121</p>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">ECG 记录 · 500Hz / 24bit</span>
+        <span class="mbtn" onclick="toast('60 秒测量 · 手环侧面电极(演示)')">测量</span>
+      </div>
+      <div class="act" style="margin-top:4px">
+        <div class="ic">🫀</div>
+        <div class="m"><b>窦性节律未见异常 <span style="font-size:9px;color:var(--ink38);font-weight:700">非临床</span></b><span>今日 10:17 · 60 秒 · 500Hz · 清洁段 ±1.4mV</span></div>
+        <div class="s" style="color:var(--mint)">✓</div>
+      </div>
+      <p style="font-size:9.5px;color:var(--ink25);margin-top:6px">房颤等节律「筛查提示」能力在认证路线上,当前仅作记录与展示。</p>
+    </div>
+    <div class="card">
+      <span class="caps">血压 · 气泵校准</span>
+      <div class="kv" style="margin-top:2px"><span>今晨 08:30</span><b>118 / 76 mmHg</b></div>
+      <div class="kv"><span>校准状态</span><b style="color:var(--mint)">✓ 7 天内已校准</b></div>
+    </div>
+    <div class="card" style="opacity:.45;border-style:dashed">
+      <span class="caps">🔒 心血管年龄(远期)</span>
+      <p style="font-size:10.5px;color:var(--ink38);margin-top:6px">需长期有氧数据积累 · 自有命名与刻度 · 合流"生命资产"。</p>
+    </div>
+  </div>
+
+  <!-- ============ 健康(长期) ============ -->
+  <div class="page" id="pg-health">
+    <div class="h-row"><div class="t">健康<small>MY HEALTH · 慢变量</small></div></div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">生命资产 · 本金账户</span>
+        <span class="state-word">欣欣向荣</span>
+      </div>
+      <div style="position:relative;height:6px;border-radius:99px;background:linear-gradient(90deg,#E24D66,#D97706,#0DA678);margin:12px 0 4px;opacity:.85">
+        <i style="position:absolute;left:78%;top:-3.5px;width:13px;height:13px;border-radius:50%;background:#0DA678;border:2.5px solid var(--bg)"></i>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink38);font-weight:700"><span>需关照</span><span>欣欣向荣</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 2px 8px;border-bottom:1px solid rgba(15,23,32,.07);margin-top:6px">
+        <div><div style="font-size:12px;color:var(--ink55);font-weight:700">静息心率基线</div>
+          <div style="font-size:9.5px;color:var(--ink38);margin-top:2px">90 天 <span class="up">▼2 bpm</span> · 资产增值</div></div>
+        <svg class="spark" viewBox="0 0 86 22"><polyline points="0,6 12,8 24,7 36,10 48,12 60,13 72,15 86,16" fill="none" stroke="#0DA678" stroke-width="1.6"/></svg>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid rgba(15,23,32,.07)">
+        <div><div style="font-size:12px;color:var(--ink55);font-weight:700">HRV 基线</div>
+          <div style="font-size:9.5px;color:var(--ink38);margin-top:2px">90 天 <span class="up">▲4 ms</span> · 57 → 61</div></div>
+        <svg class="spark" viewBox="0 0 86 22"><polyline points="0,16 12,15 24,16 36,13 48,12 60,10 72,9 86,7" fill="none" stroke="#0DA678" stroke-width="1.6"/></svg>
+      </div>
+      <div class="kv" style="margin-top:2px"><span>睡眠债(滚动 14 天)</span><b style="color:var(--coral)">−1h 12m</b></div>
+      <p style="font-size:9.5px;color:var(--ink25);margin-top:6px">机能分=今天的额度(快变量);生命资产=本金(慢变量)——连续熬夜、过训、饮酒才伤本金,恢复也慢。</p>
+    </div>
+
+    <div class="card" style="padding:4px 15px">
+      <div class="mrow" onclick="go('pg-heart')"><div class="ic">🫀</div><span>心脏健康<div class="sub2">静息 58 ▼ · ECG ✓ · 血压已校准</div></span><span class="arr">›</span></div>
+      <div class="mrow" onclick="go('pg-weekly')"><div class="ic">📊</div><span>每周报告<div class="sub2">总完成度 66% · 本周聚焦:睡眠规律</div></span><span class="arr">›</span></div>
+      <div class="mrow" onclick="go('pg-journal')"><div class="ic">📔</div><span>行为归因<div class="sub2">咖啡因 −9% · 23:30 前入睡 +15%</div></span><span class="arr">›</span></div>
+      <div class="mrow" onclick="toast('设备管理将在完整版提供')"><div class="ic">⚙️</div><span>我的设备<div class="sub2">E500 手环 · 已连接 · 86%</div></span><span class="arr">›</span></div>
+    </div>
+
+    <div class="card" style="border-style:dashed;border-color:rgba(110,116,201,.4)">
+      <span class="caps" style="color:var(--purple)">💍 配对 Vera 戒指,点亮更多</span>
+      <p style="font-size:11px;color:var(--ink55);margin-top:7px;line-height:1.7">皮温偏移 · 呼吸率 · 生理周期 · 更贴肤的睡眠追踪 —— 硬件到位自动出现,App 无需更新。</p>
+    </div>
+
+    <div class="card" style="opacity:.45;border-style:dashed">
+      <span class="caps">🔒 生理年龄(远期)</span>
+      <p style="font-size:10.5px;color:var(--ink38);margin-top:6px">数据积累 90 天后开放 · 自有命名与刻度,合流"生命资产"叙事。</p>
+    </div>
+  </div>
+
+  <!-- ============ 行为归因 ============ -->
+  <div class="page" id="pg-journal">
+    <div class="backbar"><div class="backbtn" onclick="go('pg-health',true)">‹</div>
+      <div class="t">行为归因<small>近 90 天 · 每日刷新</small></div></div>
+    <div class="insight"><div class="insight-in">
+      <div class="htitle">想抬机能,先动睡眠。</div>
+      <div class="txt">你的提升榜前三名有两项在<b>睡眠侧</b>——比多练一次性价比高。头号失分项<b>午后咖啡因</b>本周踩了 4 天。</div>
+      <div class="ctaline" onclick="go('pg-weekly')">对照本周打卡 →</div>
+    </div></div>
+    <div class="card">
+      <span class="caps">对机能分的影响 · 单变量差值</span>
+      <div class="jhead" style="margin-top:14px"><span style="color:var(--gold)">拖累</span><span style="color:var(--mint)">提升</span></div>
+      <div class="jrow"><span class="jlab">补水 2L+</span><div class="jax"><div class="l"></div><div class="r"><i style="width:100%;background:var(--mint)"></i></div></div><b class="jv pos">+24%</b></div>
+      <div class="jrow"><span class="jlab">睡眠 ≥85</span><div class="jax"><div class="l"></div><div class="r"><i style="width:87%;background:var(--mint)"></i></div></div><b class="jv pos">+21%</b></div>
+      <div class="jrow"><span class="jlab">23:30 前入睡</span><div class="jax"><div class="l"></div><div class="r"><i style="width:62%;background:var(--mint)"></i></div></div><b class="jv pos">+15%</b></div>
+      <div class="jrow"><span class="jlab">睡前阅读<span class="new">新</span></span><div class="jax"><div class="l"></div><div class="r"><i style="width:54%;background:var(--mint)"></i></div></div><b class="jv pos">+13%</b></div>
+      <div class="jrow"><span class="jlab">午后咖啡因</span><div class="jax"><div class="l"><i style="width:37%;background:var(--gold)"></i></div><div class="r"></div></div><b class="jv neg">−9%</b></div>
+      <div class="jrow"><span class="jlab">工作到深夜</span><div class="jax"><div class="l"><i style="width:25%;background:var(--gold)"></i></div><div class="r"></div></div><b class="jv neg">−6%</b></div>
+      <p style="font-size:10px;color:var(--ink38);margin-top:10px">中线=零影响 · 条长=影响幅度 · 样本不足("有/无"各 5 天门槛)的行为不显示</p>
+    </div>
+    <button class="addbtn" onclick="toast('打卡:预置行为库勾选 · 是/否 + 剂量型(咖啡/茶按杯数)')">＋ 今日打卡(补水 · 咖啡因 · 阅读…)</button>
+  </div>
+
+  <!-- ============ 每周报告 ============ -->
+  <div class="page" id="pg-weekly">
+    <div class="backbar"><div class="backbtn" onclick="go('pg-health',true)">‹</div>
+      <div class="t">每周报告<small>8/4 – 8/10</small></div></div>
+    <div class="card" style="text-align:center;padding:20px 16px">
+      <div style="font-size:34px">🎯</div>
+      <div class="htitle" style="margin-top:8px">好势头,保持住。</div>
+      <p style="font-size:11px;color:var(--ink38);margin-top:4px">连续第 3 周完成度超过 60%</p>
+      <div class="progress"><i style="width:66%"></i></div>
+      <p style="font-size:10.5px;color:var(--ink55);margin-top:7px;font-weight:700">总完成度 66% <span style="color:var(--ink38);font-weight:600">· 23/35 次打卡 · 3/5 项达成</span></p>
+    </div>
+    <div class="card habits">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps">习惯清单</span>
+        <span style="font-size:10px;font-weight:800;color:var(--ink38);cursor:pointer" onclick="toast('本周聚焦由你自选:下周想聚焦什么?')">🎯 本周聚焦:睡眠规律</span>
+      </div>
+      <div class="kv"><svg class="mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="rgba(15,23,32,.1)" stroke-width="3"/><circle cx="12" cy="12" r="9" fill="none" stroke="#0DA678" stroke-width="3" stroke-dasharray="56.5" stroke-dashoffset="8.1" transform="rotate(-90 12 12)"/></svg><span style="flex:1;margin-left:8px">23:30 前入睡</span><b>6/7</b></div>
+      <div class="kv"><svg class="mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="rgba(15,23,32,.1)" stroke-width="3"/><circle cx="12" cy="12" r="9" fill="none" stroke="#0DA678" stroke-width="3" stroke-dasharray="56.5" stroke-dashoffset="0" transform="rotate(-90 12 12)"/></svg><span style="flex:1;margin-left:8px">每日 6000+ 步</span><b>7/7</b></div>
+      <div class="kv"><svg class="mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="rgba(15,23,32,.1)" stroke-width="3"/><circle cx="12" cy="12" r="9" fill="none" stroke="#0DA678" stroke-width="3" stroke-dasharray="56.5" stroke-dashoffset="0" transform="rotate(-90 12 12)"/></svg><span style="flex:1;margin-left:8px">戒酒</span><b>5/5</b></div>
+      <div class="kv"><svg class="mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="rgba(15,23,32,.1)" stroke-width="3"/><circle cx="12" cy="12" r="9" fill="none" stroke="#D97706" stroke-width="3" stroke-dasharray="56.5" stroke-dashoffset="32.3" transform="rotate(-90 12 12)"/></svg><span style="flex:1;margin-left:8px">午后无咖啡因</span><b>3/7</b></div>
+      <div class="kv"><svg class="mini" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="rgba(15,23,32,.1)" stroke-width="3"/><circle cx="12" cy="12" r="9" fill="none" stroke="#E24D66" stroke-width="3" stroke-dasharray="56.5" stroke-dashoffset="40.4" transform="rotate(-90 12 12)"/></svg><span style="flex:1;margin-left:8px">冥想 10 分钟</span><b>2/7</b></div>
+    </div>
+    <div class="insight"><div class="insight-in">
+      <div class="txt">失分集中在<b>午后咖啡因(3/7)</b>——归因显示它平均拖累机能 <b style="color:var(--gold)">−9%</b>。下周就抓这一项,别贪多。</div>
+      <div class="ctaline" onclick="go('pg-journal')">查看 90 天归因 →</div>
+    </div></div>
+  </div>
+
+  <!-- ============ AI 教练 ============ -->
+  <div class="page" id="pg-coach">
+    <div class="h-row"><div class="t">AI 教练 <small style="display:inline;font-size:9px;letter-spacing:.16em">场景自适应人格</small></div>
+      <div class="chip" onclick="toast('对话历史将在完整版提供')">🕘 历史</div></div>
+    <div class="chat">
+      <div class="bub me">今天能练腿吗?</div>
+      <div>
+        <div class="aiavatar"><span class="aidot">AI</span>白天 · 教练腔</div>
+        <div class="bub ai" style="margin-top:6px">可以,今天是好日子:机能 <b>76(绿区)</b>,HRV 高于基线 8%。把支出打到 <b>50–62</b>——腿部大肌群 40–50 分钟正合适,组间心率回落 <b>120 以下</b>再开下一组。
+          <div class="datacard">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:10px;font-weight:800;color:var(--mint)">机能分 · 近 7 天 ▲ 上行</span>
+              <b style="font-size:15px;color:var(--ink92)">76</b>
+            </div>
+            <div class="microbars">
+              <i style="height:48%;background:rgba(217,119,6,.6)"></i><i style="height:71%"></i><i style="height:80%"></i><i style="height:30%;background:rgba(226,77,102,.6)"></i><i style="height:66%"></i><i style="height:72%"></i><i style="height:76%;background:#0DA678"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bub me">今晚呢?</div>
+      <div>
+        <div class="aiavatar"><span class="aidot">AI</span>夜间 · 伙伴腔</div>
+        <div class="bub ai" style="margin-top:6px">今天练得不错,账已经记下了。<b>23:00 前躺下</b>就好——咖啡因减益 23:00 结束,正好赶上。夜里的恢复我盯着,明早给你结果。放心睡。</div>
+      </div>
+    </div>
+    <div class="sugg">
+      <span onclick="toast('演示:建议提示词')">今晚几点睡合适?</span>
+      <span onclick="toast('演示:建议提示词')">这周还能练几次?</span>
+    </div>
+    <p style="font-size:9px;color:var(--ink25);margin-top:8px;text-align:center">AI 建议仅供参考,不构成医疗意见</p>
+    <div class="inputbar"><input placeholder="问任何关于你身体数据的问题…" onfocus="this.blur();toast('对话式教练为 P1 规划,当前为演示')"><button class="send" onclick="toast('对话式教练为 P1 规划,当前为演示')">↑</button></div>
+  </div>
+
+  <!-- 底部导航 -->
+  <div class="nav">
+    <div class="nit on" data-tab="pg-today" onclick="go('pg-today')"><div class="ic">◉</div>今日</div>
+    <div class="nit" data-tab="pg-vitals" onclick="go('pg-vitals')"><div class="ic">▥</div>体征</div>
+    <div class="nit" data-tab="pg-health" onclick="go('pg-health')"><div class="ic">⬡</div>健康</div>
+    <div class="nfab" onclick="go('pg-coach')">AI</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+    </div></div>
+  </div>
+</div>
+<script>
+var cur='pg-today';
+var TABS={'pg-today':'pg-today','pg-vitals':'pg-vitals','pg-health':'pg-health','pg-coach':null,
+          'pg-sleep':'pg-today','pg-rec':'pg-today','pg-strain':'pg-today',
+          'pg-stress':'pg-vitals','pg-heart':'pg-vitals',
+          'pg-journal':'pg-health','pg-weekly':'pg-health'};
+function go(id,isBack){
+  if(id===cur) return;
+  var from=document.getElementById(cur), to=document.getElementById(id);
+  from.classList.remove('on'); from.classList.toggle('back',!isBack);
+  to.classList.remove('back'); to.classList.add('on');
+  to.scrollTop=0; cur=id;
+  document.querySelectorAll('.nit').forEach(function(n){
+    n.classList.toggle('on', n.dataset.tab===TABS[id]);
+  });
+  animateRings(to);
+}
+function animateRings(scope){
+  scope.querySelectorAll('.arc').forEach(function(c){
+    var dash=parseFloat(c.getAttribute('stroke-dasharray')), p=parseFloat(c.dataset.p)/100;
+    c.style.transition='none'; c.style.strokeDashoffset=dash;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      c.style.transition='stroke-dashoffset 1.1s cubic-bezier(.22,.8,.3,1)';
+      c.style.strokeDashoffset=dash*(1-p);
+    });});
+  });
+}
+var tt=null;
+function toast(msg){
+  var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('show')},2600);
+}
+window.addEventListener('load',function(){ animateRings(document.getElementById('pg-today')); });
+</script>
+</body>
+</html>
