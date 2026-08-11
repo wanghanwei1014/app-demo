@@ -261,16 +261,10 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
       <span class="buff" onclick="go('pg-weekly')">🎯 本周聚焦 <b>睡眠规律</b></span>
     </div>
 
-    <div class="card ecg" onclick="go('pg-heart')">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span class="caps">ECG 签名 · <b style="color:var(--mint)">500Hz 实测</b></span>
-        <span class="mbtn" onclick="event.stopPropagation();toast('60 秒测量 · 手环侧面电极(演示)')">测量</span>
-      </div>
-      <svg viewBox="0 0 320 44">
-        <polyline points="0,26 22,26 30,22 38,30 46,26 60,26 66,8 72,40 78,26 100,26 108,22 116,30 124,26 140,26 146,8 152,40 158,26 180,26 188,22 196,30 204,26 220,26 226,8 232,40 238,26 262,26 270,22 278,30 286,26 302,26 308,12 314,36 320,26"
-          fill="none" stroke="#0DA678" stroke-width="1.6" opacity=".9"/>
-      </svg>
-      <div style="font-size:9.5px;color:var(--ink25);margin-top:4px">10:17 窦性节律未见异常(非临床) · 波形为 E500 真机实测 · 点卡片看心脏健康 ›</div>
+    <div class="card" onclick="go('pg-heart')" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+      <span style="font-size:15px">🫀</span>
+      <span style="flex:1;font-size:12px;font-weight:700;color:var(--ink55)">ECG <b style="color:var(--mint)">✓ 今日已测</b> · 窦性节律未见异常 <span style="color:var(--ink38);font-weight:600">非临床</span></span>
+      <span style="color:var(--ink38)">›</span>
     </div>
 
     <div class="card">
@@ -600,6 +594,11 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
         <span class="caps">ECG 记录 · 500Hz / 24bit</span>
         <span class="mbtn" onclick="toast('60 秒测量 · 手环侧面电极(演示)')">测量</span>
       </div>
+      <svg viewBox="0 0 320 44" style="width:100%;height:auto;margin-top:8px">
+        <polyline points="0,26 22,26 30,22 38,30 46,26 60,26 66,8 72,40 78,26 100,26 108,22 116,30 124,26 140,26 146,8 152,40 158,26 180,26 188,22 196,30 204,26 220,26 226,8 232,40 238,26 262,26 270,22 278,30 286,26 302,26 308,12 314,36 320,26"
+          fill="none" stroke="#0DA678" stroke-width="1.6" opacity=".9"/>
+      </svg>
+      <div style="font-size:9.5px;color:var(--ink25)">今晨 10:17 实测波形 · E500 真机数据</div>
       <div class="act" style="margin-top:4px">
         <div class="ic">🫀</div>
         <div class="m"><b>窦性节律未见异常 <span style="font-size:9px;color:var(--ink38);font-weight:700">非临床</span></b><span>今日 10:17 · 60 秒 · 500Hz · 清洁段 ±1.4mV</span></div>
