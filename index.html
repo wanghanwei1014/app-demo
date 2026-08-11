@@ -261,17 +261,12 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
       <span class="buff" onclick="go('pg-weekly')">🎯 本周聚焦 <b>睡眠规律</b></span>
     </div>
 
-    <div class="card" onclick="go('pg-heart')" style="display:flex;align-items:center;gap:10px;cursor:pointer">
-      <span style="font-size:15px">🫀</span>
-      <span style="flex:1;font-size:12px;font-weight:700;color:var(--ink55)">ECG <b style="color:var(--mint)">✓ 今日已测</b> · 窦性节律未见异常 <span style="color:var(--ink38);font-weight:600">非临床</span></span>
-      <span style="color:var(--ink38)">›</span>
-    </div>
-
     <div class="card">
       <span class="caps">我的一天</span>
       <div class="tl" style="margin-top:6px">
         <div class="it"><span class="tm">06:54</span><span>醒来 · 睡眠 <b>88</b></span></div>
         <div class="it"><span class="tm">08:10</span><span>晨走 32 分钟 · 支出 <b>+12</b>(自动识别)</span></div>
+        <div class="it" onclick="go('pg-heart')" style="cursor:pointer"><span class="tm">10:17</span><span>ECG 测量 · <b style="color:var(--mint)">正常 ✓</b> ›</span></div>
         <div class="it"><span class="tm">18:00</span><span style="color:var(--ink38)">建议:训练窗口(距目标还差 <b style="color:var(--ink55)">16+</b>)</span></div>
       </div>
     </div>
