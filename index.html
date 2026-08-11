@@ -279,7 +279,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 
   <!-- ============ 睡眠详情 ============ -->
   <div class="page" id="pg-sleep">
-    <div class="backbar"><div class="backbtn" onclick="go('pg-today',true)">‹</div>
+    <div class="backbar"><div class="backbtn" onclick="goBack()">‹</div>
       <div class="t">睡眠 · 存入<small>昨晚 23:12 – 06:54</small></div></div>
     <div class="bigring">
       <svg viewBox="0 0 200 200">
@@ -345,7 +345,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 
   <!-- ============ 机能详情 ============ -->
   <div class="page" id="pg-rec">
-    <div class="backbar"><div class="backbtn" onclick="go('pg-today',true)">‹</div>
+    <div class="backbar"><div class="backbtn" onclick="goBack()">‹</div>
       <div class="t">机能分 · 余额<small>今晨结算</small></div></div>
     <div class="bigring">
       <svg viewBox="0 0 200 200">
@@ -400,7 +400,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 
   <!-- ============ 支出详情 ============ -->
   <div class="page" id="pg-strain">
-    <div class="backbar"><div class="backbtn" onclick="go('pg-today',true)">‹</div>
+    <div class="backbar"><div class="backbtn" onclick="goBack()">‹</div>
       <div class="t">支出 · 负荷<small>今日累计</small></div></div>
     <div class="bigring">
       <svg viewBox="0 0 200 200">
@@ -516,7 +516,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 
   <!-- ============ 压力详情 ============ -->
   <div class="page" id="pg-stress">
-    <div class="backbar"><div class="backbtn" onclick="go('pg-vitals',true)">‹</div>
+    <div class="backbar"><div class="backbtn" onclick="goBack()">‹</div>
       <div class="t">白天压力<small>3:00 — 现在 · 10:32 更新</small></div></div>
     <div class="insight"><div class="insight-in">
       <div class="htitle">大体松弛,一段紧绷已过去。</div>
@@ -563,7 +563,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 
   <!-- ============ 心脏健康 ============ -->
   <div class="page" id="pg-heart">
-    <div class="backbar"><div class="backbtn" onclick="go('pg-vitals',true)">‹</div>
+    <div class="backbar"><div class="backbtn" onclick="goBack()">‹</div>
       <div class="t">心脏健康<small>HEART · E500 强项域</small></div>
       <span class="state-word" style="margin-left:auto">状态良好</span></div>
     <div class="insight"><div class="insight-in">
@@ -664,7 +664,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 
   <!-- ============ 行为归因 ============ -->
   <div class="page" id="pg-journal">
-    <div class="backbar"><div class="backbtn" onclick="go('pg-health',true)">‹</div>
+    <div class="backbar"><div class="backbtn" onclick="goBack()">‹</div>
       <div class="t">行为归因<small>近 90 天 · 每日刷新</small></div></div>
     <div class="insight"><div class="insight-in">
       <div class="htitle">想抬机能,先动睡眠。</div>
@@ -687,7 +687,7 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 
   <!-- ============ 每周报告 ============ -->
   <div class="page" id="pg-weekly">
-    <div class="backbar"><div class="backbtn" onclick="go('pg-health',true)">‹</div>
+    <div class="backbar"><div class="backbtn" onclick="goBack()">‹</div>
       <div class="t">每周报告<small>8/4 – 8/10</small></div></div>
     <div class="card" style="text-align:center;padding:20px 16px">
       <div style="font-size:34px">🎯</div>
@@ -761,20 +761,29 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
 </div>
 <script>
 var cur='pg-today';
-var TABS={'pg-today':'pg-today','pg-vitals':'pg-vitals','pg-health':'pg-health','pg-coach':null,
-          'pg-sleep':'pg-today','pg-rec':'pg-today','pg-strain':'pg-today',
-          'pg-stress':'pg-vitals','pg-heart':'pg-vitals',
-          'pg-journal':'pg-health','pg-weekly':'pg-health'};
-function go(id,isBack){
-  if(id===cur) return;
+var TOP={'pg-today':1,'pg-vitals':1,'pg-health':1};
+var lastTab='pg-today';
+var stack=[];
+function nav(id,isBack){
   var from=document.getElementById(cur), to=document.getElementById(id);
   from.classList.remove('on'); from.classList.toggle('back',!isBack);
   to.classList.remove('back'); to.classList.add('on');
   to.scrollTop=0; cur=id;
+  if(TOP[id]) lastTab=id;
+  var hl = TOP[id] ? id : (id==='pg-coach' ? null : lastTab);
   document.querySelectorAll('.nit').forEach(function(n){
-    n.classList.toggle('on', n.dataset.tab===TABS[id]);
+    n.classList.toggle('on', n.dataset.tab===hl);
   });
   animateRings(to);
+}
+function go(id){
+  if(id===cur) return;
+  stack.push(cur); nav(id,false);
+}
+function goBack(){
+  var target = stack.length ? stack.pop() : 'pg-today';
+  if(target===cur) target='pg-today';
+  nav(target,true);
 }
 function animateRings(scope){
   scope.querySelectorAll('.arc').forEach(function(c){
