@@ -327,6 +327,24 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
       <div class="ctaline" onclick="go('pg-rec')" data-en='Why 76 · see the ledger →'>为什么是 76 · 看账本 →</div>
     </div></div>
 
+    <div class="card" onclick="go('pg-heart')" style="cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps" data-en='🫀 Heart Guard'>🫀 心脏守护</span>
+        <span class="state-word" data-en='On duty · Day 21'>守护中 · 第 21 天</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:7px;margin-top:9px">
+        <b style="font-size:25px;font-weight:900;color:var(--ink92);line-height:1">26</b>
+        <span style="font-size:11px;font-weight:700;color:var(--ink38)" data-en='vascular age'>血管年龄</span>
+        <span style="font-size:11px;font-weight:800;color:var(--mint)" data-en='3 yrs younger than actual (29)'>比实际(29)年轻 3 岁</span>
+      </div>
+      <div class="dchips" style="margin-top:8px">
+        <span class="dchip" data-en='ECG today <b style="color:var(--mint)">✓</b>'>今日 ECG <b style="color:var(--mint)">✓</b></span>
+        <span class="dchip" data-en='BP <b>118/76</b>'>血压 <b>118/76</b></span>
+        <span class="dchip" data-en='Resting HR <b>58</b> ↓'>静息 <b>58</b> ↓</span>
+      </div>
+      <div class="ctaline" data-en='All clear today · Heart Health →'>今日各项正常 · 心脏健康 →</div>
+    </div>
+
     <div class="buffs">
       <span class="buff" onclick="go('pg-journal')" data-en='☕ Caffeine debuff <b class="neg">until 23:00</b>'>☕ 咖啡因减益 <b class="neg">至 23:00</b></span>
       <span class="buff" onclick="toast('天时:天气/空气质量等不可控外因,不赖你')" data-en='🌤 Tailwind <b>air great · go outside</b>'>🌤 天时 <b>空气优 · 宜户外</b></span>
@@ -638,6 +656,24 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
       <div class="txt" data-en='Resting HR down <b>2 bpm</b> over 90 days, 58 this morning. Aerobic base is building — keep 3 zone-1–3 sessions a week.'>静息心率 90 天下降 <b>2 bpm</b>,今晨 58。有氧底子在涨,保持每周 3 次 1–3 区训练。</div>
     </div></div>
     <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="caps" data-en='Vascular age'>血管年龄</span>
+        <span class="state-word" data-en='3 yrs younger'>比实际年轻 3 岁</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-top:8px">
+        <b style="font-size:30px;font-weight:900;color:var(--ink92);line-height:1">26</b>
+        <span style="font-size:11px;color:var(--ink38);font-weight:700" data-en='actual age 29'>实际年龄 29</span>
+      </div>
+      <div style="position:relative;height:6px;border-radius:99px;background:linear-gradient(90deg,#0DA678,#D97706,#E24D66);margin:12px 0 4px;opacity:.85">
+        <i style="position:absolute;left:15%;top:-3.5px;width:13px;height:13px;border-radius:50%;background:#0DA678;border:2.5px solid var(--bg)"></i>
+        <i style="position:absolute;left:22.5%;top:-1px;width:2px;height:8px;background:var(--ink38)"></i>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--ink38);font-weight:700"><span data-en='20 yrs'>20 岁</span><span data-en='vertical tick = actual age'>竖线 = 实际年龄</span><span data-en='60 yrs'>60 岁</span></div>
+      <div class="kv" style="margin-top:8px" data-en='<span>Pulse wave velocity (PWV)</span><b>6.8 m/s · steady</b>'><span>脉搏波传导速度 PWV</span><b>6.8 m/s · 平稳</b></div>
+      <div class="kv" data-en='<span>30-day trend</span><b style="color:var(--mint)">↓ trending younger</b>'><span>30 天趋势</span><b style="color:var(--mint)">↓ 向年轻走</b></div>
+      <p style="font-size:9.5px;color:var(--ink25);margin-top:6px" data-en='Estimated from ECG pulse-wave features · one 60s ECG a week keeps it fresh · non-clinical.'>由 ECG 脉搏波特征估算 · 每周一次 60 秒 ECG 保持更新 · 非临床。</p>
+    </div>
+    <div class="card">
       <span class="caps" data-en='Today&#39;s HR range · resting 58'>今日心率范围 · 静息 58</span>
       <svg viewBox="0 0 320 78" style="width:100%;height:auto;margin-top:10px">
         <line x1="14" y1="57" x2="310" y2="57" stroke="rgba(13,166,120,.35)" stroke-dasharray="3 4"/>
@@ -677,10 +713,6 @@ body{background:#E9EDF1;color:var(--ink92);font-family:"Segoe UI","PingFang SC",
       <span class="caps" data-en='Blood pressure · pump-calibrated'>血压 · 气泵校准</span>
       <div class="kv" style="margin-top:2px" data-en='<span>This morning 08:30</span><b>118 / 76 mmHg</b>'><span>今晨 08:30</span><b>118 / 76 mmHg</b></div>
       <div class="kv" data-en='<span>Calibration</span><b style="color:var(--mint)">✓ within 7 days</b>'><span>校准状态</span><b style="color:var(--mint)">✓ 7 天内已校准</b></div>
-    </div>
-    <div class="card" style="opacity:.45;border-style:dashed">
-      <span class="caps" data-en='🔒 Cardiovascular age (later)'>🔒 心血管年龄(远期)</span>
-      <p style="font-size:10.5px;color:var(--ink38);margin-top:6px" data-en='Needs long-run aerobic data · own name &amp; scale · merges into Life Asset.'>需长期有氧数据积累 · 自有命名与刻度 · 合流"生命资产"。</p>
     </div>
   </div>
 
